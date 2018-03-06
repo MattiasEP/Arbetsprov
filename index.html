@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Page Title</title>
+	<title>Arbetsprov</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
 </head>
@@ -14,12 +14,15 @@
 		</header>
 		
 		<form>
-			<input type="text" placeholder="Search for something..." autocomplete="off" />
+			<input type="text" id="search-input" placeholder="Search for something..." autocomplete="off" />
 		</form>
 
-		<div id="search-results">
-			<ul>
-				<li>
+		<div id="list-container">
+			<ul id="result-list">
+
+			</ul>
+			<!-- <ul>
+				<li class="selected">
 					Luke Skywalker
 					<span class="timestamp">2105-01-02 15:00</span>
 					<button><span>✕</span></button>
@@ -27,7 +30,7 @@
 				<li>hej</li>
 				<li>hej</li>
 				<li>hej</li>
-			</ul>
+			</ul> -->
 		</div>
 
 	</div>
