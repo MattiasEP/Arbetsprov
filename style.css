@@ -130,9 +130,14 @@ body {
                     color: #777;
                 }
 
+    .list-container {
+        display: none;
+    }
+
     .loader {
         display: flex;
         justify-content: center;
+        margin-top: 50px;
     }
 
     .loader svg path {
