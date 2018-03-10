@@ -2,114 +2,129 @@ class App {
     constructor() {
         this.apiURL = 'https://swapi.co/api/people/?search='
 
+        // Get elements from the DOM
+        this.searchInput = document.querySelector('#search-input')
+        this.searchForm = document.querySelector('#search-form')
+        this.savedList = document.querySelector('#saved-list')
+        this.dropdown = document.querySelector('#dropdown')
+        this.loaderSpan = document.querySelector('#loader')
+
+        // SVG path for a loader/spinner
+        this.loader = `<svg width="25" height="25" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                            <path d="M 150,0 a 150,150 0 0,1 106.066,256.066 l -35.355,-35.355 a -100,-100 0 0,0 -70.711,-170.711 z"></path>
+                        </svg>`
+    
+        // Set some initial variables for the class
         this.searchResults = []
         this.savedItems = []
         this.selectedIndex = -1
-
-        this.searchInput = document.querySelector('#search-input')
-        this.searchForm = document.querySelector('#search-form')
-        this.listContainer = document.querySelector('#list-container')
-
-        this.loader = `<div class="loader" >
-                            <svg width="50" height="50" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" version="1.1">
-                            <path d="M 150,0 a 150,150 0 0,1 106.066,256.066 l -35.355,-35.355 a -100,-100 0 0,0 -70.711,-170.711 z"></path>
-                            </svg>
-                        </div>`
-    
-        this.deleteItem = this.deleteItem.bind(this)
+        this.isSearching = false
     }
 
     init() {
         this.bindEvents()
     }
 
+    restoreSelectedIndex() { this.selectedIndex = -1 }
+
     bindEvents() {
-        
         let timer
         this.searchInput.addEventListener('keydown', (e) => {
+            
             if(e.key === 'Backspace') {
-                this.listContainer.style.display = 'none'
-                // this.searchResults = []
-                this.displayResults()
+                //Göra bättre?
+                setTimeout(() => {
+                    if(this.searchInput.value.length === 0) {
+                        this.hideDropdown()
+                        this.isSearching = false
+                    }
+                }, 50)
             }
 
             if(e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault()
                 this.switchSelectedResult(e.key)
-                return
             } 
             
             if(e.key === 'Escape') {
                 this.searchInput.value = ''
                 this.searchResults = []
-                this.listContainer.style.display = 'none'
                 this.displaySavedItems()
+                this.hideDropdown()
+                this.isSearching = false
             }
 
             if(e.key === 'Delete') {
-                if(this.listContainer.childNodes[0].id === 'saved-items') {
-                    console.log( 'DELETE' )
-                    this.deleteItem()
-                } else {
-                    console.log( 'inget togs bort' )
+                if(!this.isSearching) {
+                    this.deleteItem(this.selectedIndex)
                 }
-                
             } 
 
             clearTimeout(timer)
             timer = setTimeout(() => {
                 if(this.searchInput.value !== '') {
+                    this.loaderSpan.innerHTML = this.loader
                     this.searchResults = []
-                    this.listContainer.style.display = 'block'
-                    this.listContainer.innerHTML = this.loader
-                    fetch(this.apiURL + this.searchInput.value )
+                    fetch( this.apiURL + this.searchInput.value )
                         .then( response => response.json() )
                         .then( json => {
-                            json.results.forEach(result => {
-                                this.searchResults.push(result.name)
-                            })
+                            this.searchResults = json.results.map( result => result.name )
                             this.searchResults.sort() // Hur gör man rätt?
                             this.displayResults()
+                            this.isSearching = true
+                            if(this.savedItems.length > 0) { this.displaySavedItems() }
                         })
                 }
-            }, 300);
-        
-
+            }, 300)
         })
 
         this.searchForm.addEventListener('submit', (e) => {
             e.preventDefault()
             this.searchInput.value = ''
-            this.listContainer.style.display = 'none'
             if(this.selectedIndex !== -1 && this.searchResults.length > 0) {
-                this.saveItem()
+                this.saveItem(this.selectedIndex)
+                this.isSearching = false
             }
         })
+    }
 
+    showDropdown(noOfItems) {
+        this.dropdown.style.height = `${noOfItems * 50}px`
+        this.restoreSelectedIndex()
+    }
+
+    hideDropdown() {
+        this.dropdown.style.height = '0px'
+        this.restoreSelectedIndex()
     }
 
     displayResults() {
-        this.selectedIndex = -1
-        
-        let html = `<ul>`
-
+        this.loaderSpan.innerHTML = `<img src="./UI/assets/search.svg" />`
+        this.restoreSelectedIndex()
+        let html = ``
         if(this.searchResults.length > 0) {
-       
-            this.searchResults.forEach(result => {
-                html += `<li>${result}</li>`
+            this.searchResults.forEach((result, index) => {
+                html += `<li onclick="app.saveItem(${index})">${result}</li>`
             })
         } else {
             html += `<li>Sorry, no results found...</li>`
         }
-        
-        html += `</ul>`
-
-        this.listContainer.innerHTML = html
+        this.dropdown.innerHTML = html
+        if (this.searchResults.length > 0) {
+            this.showDropdown(this.searchResults.length)
+        } else {
+            this.showDropdown(1)
+        }
     }
 
     switchSelectedResult(key) {
+        let listItems
 
-        let listItems = this.listContainer.childNodes[0].childNodes
+        if(this.isSearching) {
+            listItems = this.dropdown.childNodes
+        } else {
+            listItems = this.savedList.childNodes
+        }
 
         if (key === 'ArrowDown' && this.selectedIndex < listItems.length - 1) {
             this.selectedIndex++
@@ -131,53 +146,49 @@ class App {
         }
     }
 
-    saveItem() {
-
+    saveItem(index) {
         const date = new Date()
         const year = date.getFullYear()
         const month = ( '0' + (date.getMonth() + 1) ).substr(-2)
-        const day = ( '0' + date.getDay() ).substr(-2)
+        const day = ( '0' + date.getDate() ).substr(-2)
         const hour = ( '0' + date.getHours() ).substr(-2)
         const min = ( '0' + date.getMinutes() ).substr(-2)
         
         const timestamp = `${year}-${month}-${day} ${hour}:${min}`
         
         this.savedItems.push({
-            name: this.searchResults[this.selectedIndex],
+            name: this.searchResults[index],
             timestamp: timestamp 
         })
+
         this.searchResults = []
+        this.hideDropdown()
         this.displaySavedItems()
     }
 
 
     displaySavedItems() {
-        this.selectedIndex = -1
+        this.savedList.style.display = 'inline-block'
+        this.restoreSelectedIndex()
+        
         if(this.savedItems.length > 0) {
-            let html = `<ul id="saved-items">`
-    
-    
-            if(this.savedItems.length > 0) {
-                this.savedItems.forEach((item, index) => {
-                    html += `<li>${item.name}
-                                <span class="timestamp">${item.timestamp}</span>
-                                <button onclick="app.deleteItem(${index})" tabindex="-1"><span>✕</span></button>
-                            </li>`
+            let html = ``
+            this.savedItems.forEach((item, index) => {
+                html += `<li>${item.name}
+                            <span class="timestamp">${item.timestamp}</span>
+                            <button onclick="app.deleteItem(${index})" tabindex="-1"><span>✕</span></button>
+                        </li>`
                 })
-            }
-    
-            html += `</ul>`
-    
-            this.listContainer.innerHTML = html
-            this.listContainer.style.display = 'block'
+            this.savedList.innerHTML = html
         } else {
-            this.listContainer.style.display = 'none'    
+            this.savedList.style.display = 'none'
         }
     }
 
     deleteItem(index) {
         this.savedItems.splice(index, 1)
         this.displaySavedItems()
+        this.restoreSelectedIndex()
     }
 
 }
@@ -186,3 +197,7 @@ const app = new App()
 
 app.init()
 
+// Sortera rätt
+// Vad ska hända när man trycker ENTER på ett valt item i savedList?
+// Ändra selectedIndex på hover
+// tar bort sista när this.selectedIndex === -1

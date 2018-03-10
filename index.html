@@ -10,29 +10,16 @@
 <body>
 	<div class="app">
 		<header>
-			<img src="./UI/assets/logo.svg" />
+			<h1>Searcq</h1>
 		</header>
-		
 		<form id="search-form">
+			<span id="loader">
+				<img src="./UI/assets/search.svg"/>
+			</span>
 			<input type="text" id="search-input" placeholder="Search for something..." autocomplete="off" />
 		</form>
-
-		<div id="list-container" class="list-container">
-			<!-- <ul id="result-list">
-
-			</ul> -->
-			<!-- <ul>
-				<li class="selected">
-					Luke Skywalker
-					<span class="timestamp">2105-01-02 15:00</span>
-					<button><span>✕</span></button>
-				</li>
-				<li>hej</li>
-				<li>hej</li>
-				<li>hej</li>
-			</ul> -->
-		</div>
-
+		<ul id="dropdown" class="dropdown"></ul>
+		<div id="saved-list" class="saved-list"></div>
 	</div>
 	<script src="script.js"></script>
 </body>
