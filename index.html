@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="eng">
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Arbetsprov</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Search for characters from the Star Wars movies">
+	<meta name="keywords" content="Star Wars, Luke Skywalker, Darth Vader, I AM YOUR FATHER">
+	<meta name="author" content="Mattias Söderström">
+	<title>Arbetsprov</title>
 	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
 </head>
 <body>
@@ -13,12 +16,15 @@
 			<h1>Searcq</h1>
 		</header>
 		<form id="search-form">
-			<span id="loader">
+			<!-- container for loader/search-icon -->
+			<span id="search-icon">
 				<img src="./UI/assets/search.svg"/>
 			</span>
 			<input type="text" id="search-input" placeholder="Search for something..." autocomplete="off" />
 		</form>
+		<!-- UL for search results -->
 		<ul id="dropdown" class="dropdown"></ul>
+		<!-- UL for saved items -->
 		<div id="saved-list" class="saved-list"></div>
 	</div>
 	<script src="script.js"></script>
