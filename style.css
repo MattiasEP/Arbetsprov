@@ -24,6 +24,12 @@ header h1 {
 	text-indent: 9999px;
 }
 
+noscript p {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 32px;
+}
+
 .app {
     position: relative;
     margin: auto;
