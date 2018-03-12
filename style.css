@@ -15,6 +15,7 @@ body {
     background: -webkit-linear-gradient(top, #02274f 0%,#3d59a4 100%); /* Chrome10-25,Safari5.1-6 */
     background: linear-gradient(to bottom, #02274f 0%,#3d59a4 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#02274f', endColorstr='#3d59a4',GradientType=0 ); /* IE6-9 */
+    background-attachment: fixed;
 }
 
 /* The logo, text-indent for optimizing semantics */
@@ -173,12 +174,11 @@ noscript p {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            width: 250px;
         }
 
         .saved-list li time {
             display: inline-block;
-            margin-left: auto;
+            margin-left: 20px;
             margin-right: 100px;
             text-align: right;
             font-size: 12px;
